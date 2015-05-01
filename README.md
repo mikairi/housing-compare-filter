@@ -1,4 +1,4 @@
-# RIT Housing site comparison tool
+RIT Housing site comparison tool
 ===
 This project houses the AngularJS apps that power the comparing/filtering tools
 on RIT Housing. http://www-staging.rit.edu/fa/housing/content/compare-housing

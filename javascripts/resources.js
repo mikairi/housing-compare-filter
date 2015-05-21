@@ -2,11 +2,13 @@ angular.module('housingResources', [])
   .factory('HousingResources', ['$http', function ($http) {
     return {
       housingOptions: function () {
-        return $http.get('/fa/housing/api/v1.0/housing_options', {cache: true})
-          .then(function (res) {
-            res.data.data = _.filter(res.data.data, 'rates');
-            return res;
-          });
+        return $http.get('/fa/housing/api/v1.0/housing_options', {
+          cache: true,
+          transformResponse: appendTransform($http.defaults.transformResponse, function (data) {
+            data.data = _.filter(data.data, 'rates');
+            return data;
+          })
+        });
       },
 
       residenceTypes: function () {
@@ -42,3 +44,8 @@ angular.module('housingResources', [])
       }
     };
   }]);
+
+function appendTransform(defaults, transform) {
+  defaults = angular.isArray(defaults) ? defaults : [defaults];
+  return defaults.concat(transform);
+}

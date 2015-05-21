@@ -119,7 +119,7 @@ angular.module('housingFilter', ['housingResources'])
         return images[0].url;
       } else {
         // placeholder thumbnail
-        return 'https://placehold.it/240x180&text=:(';
+        return 'https://placehold.it/240x180';
       }
     }
   }]);

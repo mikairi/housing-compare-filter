@@ -2,7 +2,11 @@ angular.module('housingResources', [])
   .factory('HousingResources', ['$http', function ($http) {
     return {
       housingOptions: function () {
-        return $http.get('/fa/housing/api/v1.0/housing_options', {cache: true});
+        return $http.get('/fa/housing/api/v1.0/housing_options', {cache: true})
+          .then(function (res) {
+            res.data.data = _.filter(res.data.data, 'rates');
+            return res;
+          });
       },
 
       residenceTypes: function () {

@@ -21,7 +21,7 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
             '<div>{{comparees.rooms[$index].label}}</div>'
           },
           'rent': {
-            template: '{{comparees.rooms[$index].per_semester}}'
+            template: '{{comparees.rooms[$index].summer_2015}}'
           },
           'occupancy': {
             template: '{{comparees.residences[$index].field_required_occupancy}}'
@@ -52,14 +52,17 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
   }])
 
   .config(['$compileProvider', function ($compileProvider) {
-    $compileProvider.debugInfoEnabled(false);
+    //$compileProvider.debugInfoEnabled(false);
   }])
 
   .filter('correctName', [function () {
     return function (text) {
-      if (text === 'Nathaniel Rochester Hall') {
-        return 'Residence Hall';
-      }
+      //if (text === 'Nathaniel Rochester Hall') {
+      //  return 'Residence Hall';
+      //}
+      //return text;
+
+      // Names are left as is for SCH
       return text;
     };
   }])
@@ -142,7 +145,8 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
     });
 
     HousingResources.housingOptions().success(function (data) {
-      $scope.residences = data.data;
+      // filter for summer housing only
+      $scope.residences = _.filter(data.data, 'summer_housing');
     });
 
 
@@ -155,15 +159,10 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
       }
     }
 
-    function getRoomsByRes(residence, apartment) {
+    function getRoomsByRes(residence) {
       if (!residence) return [];
-      var type = !!apartment ? apartment : residence;
-      var housing;
-
-      if (housing = _.findWhere($scope.residences, {housing_type: type.name})) {
-        var currentRates = _.last(housing.rates);
-        return currentRates.rates;
-      }
+      var currentRates = _.last(residence.rates);
+      return currentRates.rates;
     }
 
     function resetSubSelect(index) {
@@ -239,7 +238,7 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
     });
 
     HousingResources.housingOptions().then(function (result) {
-      var housing = result.data.data;
+      var housing = _.filter(result.data.data, 'summer_housing');
       angular.forEach($state.params.room, function (roomId, index) {
         $scope.comparees.residences[index] = _.find(housing, function (residence) {
           var currentRates = _.last(residence.rates);

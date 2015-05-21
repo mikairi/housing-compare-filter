@@ -111,7 +111,7 @@ angular.module('housingFilter', ['housingResources'])
       if ($scope.comparees.length < 2) return '';
 
       var param = _.pluck($scope.comparees, 'id').join('-');
-      return '/fa/housing/content/compare-residences-side-side#/compare/' + param;
+      return '/fa/housing/summer-conference-housing/compare-housing#/compare/' + param;
     }
 
     function getHeaderImage(residence) {

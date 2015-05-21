@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+  <base href="/compare.html">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/angular-ui-select/0.11.2/select.min.css"/>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.0/angular.min.js"></script>
+
+  <style>
+    .glyphicon-spin {
+      animation: spin 1s infinite linear;
+      -ms-animation: spin 1s infinite linear;
+      -webkit-animation: spinw 1s infinite linear;
+      -moz-animation: spinm 1s infinite linear;
+    }
+
+    @keyframes spin {
+      from { transform: scale(1) rotate(0deg);}
+      to { transform: scale(1) rotate(360deg);}
+    }
+
+    @-webkit-keyframes spinw {
+      from { -webkit-transform: rotate(0deg);}
+      to { -webkit-transform: rotate(360deg);}
+    }
+
+    @-moz-keyframes spinm {
+      from { -moz-transform: rotate(0deg);}
+      to { -moz-transform: rotate(360deg);}
+    }
+  </style>
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+</head>
+<body ng-app="housingCompare">
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser.
+  Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<!-- Add your site or application content here -->
+<div class="container" ng-controller="MainCtrl">
+  <div class="text-center" ng-if="!loadingComplete"><h1><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></h1></div>
+  <div ui-view ng-show="loadingComplete"></div>
+</div>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.6.0/lodash.min.js"></script>
+<script type="text/javascript"
+        src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.13/angular-ui-router.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-select/0.11.2/select.min.js"></script>
+<script type="text/javascript" src="javascripts/min/sch_compare.min.js"></script>
+<script type="text/javascript" src="interceptors.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+
+<script type="text/ng-template" id="table.html">
+  <h1>Compare Results</h1>
+
+  <a ui-sref="choose"><span class="glyphicon glyphicon-menu-left"></span> Change your selection</a>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <!--<h4 class="panel-title">-->
+        <a style="font-size: 1.2em;" href="" ng-click="toggleCollapse('#collapseTop')">
+          <span class="glyphicon"
+                ng-class="{'glyphicon-menu-up': !!collapseShown, 'glyphicon-menu-down': !collapseShown}"></span>
+          <span>Applicable to all RIT housing</span>
+        </a>
+      <!--</h4>-->
+    </div>
+    <div class="panel-collapse collapse" id="collapseTop">
+      <div class="panel-body">
+        <div class="col-sm-4">
+          <p>9-month academic year contract</p>
+          <p>Rent placed on student account</p>
+          <p>Co-op/Study Abroad reduced rent</p>
+          <p>Shuttle bus service</p>
+          <p>Standard Cable</p>
+        </div>
+        <div class="col-sm-4">
+          <p>Phone landline</p>
+          <p>Free laundry facilities</p>
+          <p>Smoke-free</p>
+          <p>Live-in Residence Life staff</p>
+          <p>Fire extinguishers</p>
+        </div>
+        <div class="col-sm-4">
+          <p>Utilities included in rent</p>
+          <p>Fire strobe lighting</p>
+          <p>No storage facilities</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead>
+      <tr>
+        <td class="col-sm-2">
+          <div class="hidden-print">
+            <button class="btn btn-default" onclick="window.print()">Print Comparison</button>
+          </div>
+          <div class="hidden-print">
+            <button class="btn btn-default" ng-click="generateUrl()">Email Comparison</button>
+          </div>
+        </td>
+        <td class="col-sm-2 text-left" ng-repeat="cell in comparees.rooms track by $index">
+          <div ui-view="header"></div>
+        </td>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+        <td>Rent rates (per week)</td>
+        <td class="text-center" ng-repeat="cell in comparees.rooms track by $index"><span ui-view="rent"></span></td>
+      </tr>
+      <!--<tr>
+        <td>Required occupancy</td>
+        <td class="text-center" ng-repeat="cell in [1,2,3,4]"><span ui-view="occupancy"></span></td>
+      </tr>-->
+      <tr ng-repeat="feature in features">
+        <td>{{feature.name}}</td>
+        <td class="text-center" ng-repeat="cell in comparees.rooms track by $index"><span ui-view="feature"></span></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</script>
+
+
+<script type="text/ng-template" id="choose.html">
+  <h1>Side-by-Side Comparison</h1>
+  <p>Choose up to four (4) residences to compare:</p>
+
+  <form name="form" class="row" ng-submit="goToCompare()" ng-show="loadingComplete">
+    <div class="form-group" ng-repeat="cell in [1,2,3,4]" ng-if="showSelector($index)">
+      <ng-form name="sel_{{cell}}">
+        <label>{{cell}}.</label>
+        <select class="form-control" name="selResidence_{{cell}}" id="sel-residence-{{cell}}"
+                ng-model="comparees.residences[$index]" ng-required="$index === 0 || $index === 1"
+                ng-options="unit.label for unit in residences track by unit.id"
+                ng-change="resetSubSelect($index)">
+          <option class="text-muted" value="">- Select a Type of Residence -</option>
+        </select>
+
+        <select class="form-control" name="selRoom_{{cell}}" id="sel-room-{{cell}}"
+                ng-model="comparees.rooms[$index]" ng-required="comparees.residences[$index]"
+                ng-show="showRoomSelector($index)"
+                ng-options="room.label for room in getRoomsByRes(comparees.residences[$index]) track by room.id">
+          <option class="text-muted" value="">- Select a Type of Room -</option>
+        </select>
+      </ng-form>
+    </div>
+
+    <button type="submit" class="btn btn-default">Compare Selected</button>
+  </form>
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.6.0/lodash.min.js"></script>
+
+  <style>
+    .glyphicon-spin {
+      animation: spin 1s infinite linear;
+      -ms-animation: spin 1s infinite linear;
+      -webkit-animation: spinw 1s infinite linear;
+      -moz-animation: spinm 1s infinite linear;
+    }
+
+    @keyframes spin {
+      from { transform: scale(1) rotate(0deg);}
+      to { transform: scale(1) rotate(360deg);}
+    }
+
+    @-webkit-keyframes spinw {
+      from { -webkit-transform: rotate(0deg);}
+      to { -webkit-transform: rotate(360deg);}
+    }
+
+    @-moz-keyframes spinm {
+      from { -moz-transform: rotate(0deg);}
+      to { -moz-transform: rotate(360deg);}
+    }
+  </style>
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+</head>
+<body ng-app="housingFilter">
+<!--[if lt IE 7]>
+<p class="browsehappy">
+  You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+  your browser</a> to improve your experience.
+</p>
+<![endif]-->
+
+<!-- Add your site or application content here -->
+<div class="container" ng-controller="FilterCtrl">
+  <h1>Compare by Feature or Amenity</h1>
+
+
+  <div class="text-center" ng-if="!loadingComplete"><h1><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></h1></div>
+  <div class="row" ng-show="loadingComplete" ng-cloak>
+    <div class="col-md-3 col-sm-4">
+      <a href="" ng-click="clearFilters()">clear checked</a>
+
+      <fieldset ng-repeat="(categoryName, featureList) in features">
+        <legend>
+          <a data-toggle="collapse" data-target="#collapse-{{$index}}" href="">{{categoryName}}</a>
+        </legend>
+        <div class="collapse" id="collapse-{{$index}}">
+          <div class="checkbox" ng-repeat="feature in featureList track by feature.tid">
+            <label><input type="checkbox" ng-model="filters[feature.name]">{{feature.name}}</label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+    <div class="col-md-9 col-sm-8">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="well well-sm" ng-cloak ng-hide="isEmpty(comparees)">
+            <a class="label label-primary" href="" ng-repeat="room in comparees track by $index"
+               ng-click="removeFromCompare($index)"
+               style="display: inline-block;margin: 4px;">
+              <button type="button" class="close" aria-label="Close" style="margin-left: 5px;font-size: 18px;"><span aria-hidden="true">&times;</span></button>
+              <span class="pull-left">{{room.residenceName}}<br>{{room.label}}</span>
+            </a>
+          </div>
+        </div>
+        <div class="col-xs-12 lead">
+          <a class="btn btn-default pull-right" ng-href="{{linkToCompare()}}" ng-class="{'disabled': comparees.length < 2}">Compare Selected Side-by-Side</a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4 col-xs-6" ng-repeat-start="unit in residences | filter:filterFn">
+          <div class="thumbnail">
+            <img ng-src="{{getHeaderImage(unit)}}" alt="">
+
+            <div class="caption">
+              <a href="{{unit.url}}">{{unit.label}}</a>
+
+              <div class="">
+                <select class="form-control" name="sel-rooms-{{$index}}"
+                        ng-model="unit.selectedRoom"
+                        ng-options="room.label for room in unit.rates[unit.rates.length - 1].rates track by room.id"></select>
+                <button class="form-control btn btn-default btn-sm" ng-click="addToCompare(unit)">Add to Compare
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="clearfix visible-xs-block" ng-repeat-end ng-if="$odd"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.0/angular.min.js"></script>
+<script type="text/javascript" src="javascripts/min/sch_filter.min.js"></script>
+<script type="text/javascript" src="interceptors.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</body>
+</html>

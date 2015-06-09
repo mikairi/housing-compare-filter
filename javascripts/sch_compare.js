@@ -21,7 +21,7 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
             '<div>{{comparees.rooms[$index].label}}</div>'
           },
           'rent': {
-            template: '{{comparees.rooms[$index].summer_2015}}'
+            template: '{{comparees.rooms[$index].full_day}}'
           },
           'occupancy': {
             template: '{{comparees.residences[$index].field_required_occupancy}}'

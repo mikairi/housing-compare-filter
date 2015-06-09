@@ -5,7 +5,13 @@ angular.module('housingResources', [])
         return $http.get('/fa/housing/api/v1.0/housing_options', {
           cache: true,
           transformResponse: appendTransform($http.defaults.transformResponse, function (data) {
-            data.data = _.filter(data.data, 'rates');
+            data.data = _.chain(data.data).map(function (value) {
+              if (!!value.summer_housing) {
+                value.rates = value.sch_rates;
+              }
+              return value;
+            }).filter('rates').value();
+
             return data;
           })
         });

@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/angular-ui-select/0.11.2/select.min.css"/>
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.0/angular.min.js"></script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
 
   <style>
     .glyphicon-spin {
@@ -42,6 +42,10 @@
     @-moz-keyframes spinm {
       from { -moz-transform: rotate(0deg);}
       to { -moz-transform: rotate(360deg);}
+    }
+
+    .form-control {
+      width: 94%;
     }
   </style>
 
@@ -78,7 +82,7 @@
       <!--<h4 class="panel-title">-->
         <a style="font-size: 1.2em;" href="" ng-click="toggleCollapse('#collapseTop')">
           <span class="glyphicon"
-                ng-class="{'glyphicon-menu-up': !!collapseShown, 'glyphicon-menu-down': !collapseShown}"></span>
+                ng-class="{'glyphicon-triangle-bottom': !!collapseShown, 'glyphicon-triangle-right': !collapseShown}"></span>
           <span>Applicable to all RIT housing</span>
         </a>
       <!--</h4>-->
@@ -150,15 +154,18 @@
   <p>Choose up to four (4) residences to compare:</p>
 
   <form name="form" class="row" ng-submit="goToCompare()" ng-show="loadingComplete">
-    <div class="form-group" ng-repeat="cell in [1,2,3,4]" ng-if="showSelector($index)">
+    <div class="form-group col-sm-6" ng-repeat-start="cell in [1,2,3,4]" ng-if="showSelector($index)">
       <ng-form name="sel_{{cell}}">
         <label>{{cell}}.</label>
-        <select class="form-control" name="selResidence_{{cell}}" id="sel-residence-{{cell}}"
+        <div class="clearfix"></div>
+        <select class="form-control pull-left" name="selResidence_{{cell}}" id="sel-residence-{{cell}}"
                 ng-model="comparees.residences[$index]" ng-required="$index === 0 || $index === 1"
                 ng-options="unit.name for unit in housingTypes track by unit.tid"
                 ng-change="resetSubSelect($index)">
           <option class="text-muted" value="">- Select a Type of Residence -</option>
         </select>
+        <div class="pull-right"><a href="" ng-click="comparees.residences[$index] = null"><span class="glyphicon glyphicon-remove-sign"></span></a></div>
+        <div class="clearfix"></div>
 
         <select class="form-control" name="selSub_{{cell}}" id="sel-sub-{{cell}}"
                 ng-required="comparees.residences[$index].tid === '52'"
@@ -167,6 +174,7 @@
                 ng-change="resetRoomSelect($index)">
           <option class="text-muted" value="">- Select an Apartment -</option>
         </select>
+        <div class="clearfix"></div>
 
         <select class="form-control" name="selRoom_{{cell}}" id="sel-room-{{cell}}"
                 ng-model="comparees.rooms[$index]" ng-required="comparees.residences[$index]"
@@ -174,10 +182,12 @@
                 ng-options="room.label for room in getRoomsByRes(comparees.residences[$index], comparees.apartments[$index]) track by room.id">
           <option class="text-muted" value="">- Select a Type of Room -</option>
         </select>
+        <div class="clearfix"></div>
       </ng-form>
     </div>
+    <div ng-repeat-end ng-class="{'clearfix hidden-xs': $odd}"></div>
 
-    <button type="submit" class="btn btn-default">Compare Selected</button>
+    <button type="submit" class="btn btn-default center-block">Compare Selected</button>
   </form>
 </script>
 </body>

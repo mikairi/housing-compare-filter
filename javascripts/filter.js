@@ -23,7 +23,7 @@ angular.module('housingFilter', ['housingResources'])
     }
   }])
 
-  .controller('FilterCtrl', ['HousingResources', '$scope', '$q', function (HousingResources, $scope, $q) {
+  .controller('FilterCtrl', ['HousingResources', '$scope', '$q', '$timeout', function (HousingResources, $scope, $q, $timeout) {
     var promises = {
       freeServices: HousingResources.freeServices(),
       contractTerms: HousingResources.contractTerms(),
@@ -42,7 +42,17 @@ angular.module('housingFilter', ['housingResources'])
     $scope.removeFromCompare = removeFromCompare;
     $scope.linkToCompare = linkToCompare;
     $scope.getHeaderImage = getHeaderImage;
+    $scope.getHousingType = getHousingType;
+    $scope.getRoomTypes = getRoomTypes;
 
+
+    $timeout(function () {
+      $scope.$watch('loadingComplete', function (newValue) {
+        if (newValue == true) {
+          loadJQuery(jQuery);
+        }
+      });
+    });
 
     $q.all(promises).then(function (results) {
       $scope.features['Free Services'] = results.freeServices.data.list;
@@ -51,7 +61,9 @@ angular.module('housingFilter', ['housingResources'])
       $scope.features['Amenities'] = results.amenities.data.list;
       $scope.features['Safety & Security'] = results.safety.data.list;
 
-      $scope.residences = results.housingOptions.data.data;
+      $scope.residences = _.filter(results.housingOptions.data.data, function (value) {
+        return !value.summer_housing;
+      });
       angular.forEach($scope.residences, function (res) {
         // Concat all features into one big "all" category
         res.allFeatures = [].concat(_.values(res.free_services),
@@ -61,7 +73,7 @@ angular.module('housingFilter', ['housingResources'])
           _.values(res.safety));
 
         // Assign initial room/rate selection
-        res.selectedRoom = res.rates[res.rates.length - 1].rates[0];
+        res.selectedRoom = $scope.getRoomTypes(res)[0];
       });
 
       $scope.loadingComplete = true;
@@ -113,13 +125,43 @@ angular.module('housingFilter', ['housingResources'])
     }
 
     function getHeaderImage(residence) {
-      var images = residence.images;
-
-      if (images) {
-        return images[0].url;
+      if (residence.images) {
+        return residence.images;
       } else {
         // placeholder thumbnail
         return 'https://placehold.it/240x180';
       }
     }
+
+    function getHousingType(residence) {
+      var housingType = _.last(residence.housing_type_all);
+      if (housingType === "Residence Hall" || housingType === "Apartments") return housingType;
+      if (residence.id === 405 || residence.id === 505) return "Suite";
+      return "";
+    }
+
+    function getRoomTypes(residence) {
+      var latestRates = _.last(residence.rates).rates;
+
+      // if no room_type field explicitly defined (i.e empty) get the rates
+      if (_.isEmpty(residence.room_types)) {
+        return latestRates;
+      } else {
+        return _.map(residence.room_types, function (room) {
+          room.id = _.result(_.find(latestRates, 'label', room.rate), 'id');
+          return room;
+        });
+      }
+    }
   }]);
+
+
+function loadJQuery($) {
+  $(function () {
+    $('fieldset').on('show.bs.collapse', function () {
+      $(this).find('.glyphicon').removeClass('glyphicon-plus-sign').addClass('glyphicon-minus-sign');
+    }).on('hide.bs.collapse', function () {
+      $(this).find('.glyphicon').removeClass('glyphicon-minus-sign').addClass('glyphicon-plus-sign');
+    });
+  });
+}

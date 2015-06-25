@@ -26,18 +26,30 @@
     }
 
     @keyframes spin {
-      from { transform: scale(1) rotate(0deg);}
-      to { transform: scale(1) rotate(360deg);}
+      from {
+        transform: scale(1) rotate(0deg);
+      }
+      to {
+        transform: scale(1) rotate(360deg);
+      }
     }
 
     @-webkit-keyframes spinw {
-      from { -webkit-transform: rotate(0deg);}
-      to { -webkit-transform: rotate(360deg);}
+      from {
+        -webkit-transform: rotate(0deg);
+      }
+      to {
+        -webkit-transform: rotate(360deg);
+      }
     }
 
     @-moz-keyframes spinm {
-      from { -moz-transform: rotate(0deg);}
-      to { -moz-transform: rotate(360deg);}
+      from {
+        -moz-transform: rotate(0deg);
+      }
+      to {
+        -moz-transform: rotate(360deg);
+      }
     }
   </style>
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -55,7 +67,8 @@
   <h1>Compare by Feature or Amenity</h1>
 
 
-  <div class="text-center" ng-if="!loadingComplete"><h1><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></h1></div>
+  <div class="text-center" ng-if="!loadingComplete"><h1><span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+  </h1></div>
   <div class="row" ng-show="loadingComplete" ng-cloak>
     <div class="col-md-3 col-sm-4">
       <a href="" ng-click="clearFilters()">clear checked</a>
@@ -78,13 +91,15 @@
             <a class="label label-primary" href="" ng-repeat="room in comparees track by $index"
                ng-click="removeFromCompare($index)"
                style="display: inline-block;margin: 4px;">
-              <button type="button" class="close" aria-label="Close" style="margin-left: 5px;font-size: 18px;"><span aria-hidden="true">&times;</span></button>
+              <button type="button" class="close" aria-label="Close" style="margin-left: 5px;font-size: 18px;"><span
+                  aria-hidden="true">&times;</span></button>
               <span class="pull-left">{{room.residenceName}}<br>{{room.label}}</span>
             </a>
           </div>
         </div>
         <div class="col-xs-12 lead">
-          <a class="btn btn-default pull-right" ng-href="{{linkToCompare()}}" ng-class="{'disabled': comparees.length < 2}">Compare Selected Side-by-Side</a>
+          <a class="btn btn-default pull-right" ng-href="{{linkToCompare()}}"
+             ng-class="{'disabled': comparees.length < 2}">Compare Selected Side-by-Side</a>
         </div>
       </div>
       <div class="row">
@@ -99,7 +114,9 @@
                 <select class="form-control" name="sel-rooms-{{$index}}"
                         ng-model="unit.selectedRoom"
                         ng-options="room.label for room in unit.rates[unit.rates.length - 1].rates track by room.id"></select>
-                <button class="form-control btn btn-default btn-sm" ng-click="addToCompare(unit)">Add to Compare
+                <button class="form-control btn btn-default btn-sm"
+                        ng-click="addToCompare(unit)"
+                        ng-class="{'disabled': comparees.length >= 4}">Add to Compare
                 </button>
               </div>
             </div>
@@ -112,7 +129,7 @@
 </div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.0/angular.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
 <script type="text/javascript" src="javascripts/min/sch_filter.min.js"></script>
 <script type="text/javascript" src="interceptors.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>

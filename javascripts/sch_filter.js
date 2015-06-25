@@ -23,7 +23,7 @@ angular.module('housingFilter', ['housingResources'])
     }
   }])
 
-  .controller('FilterCtrl', ['HousingResources', '$scope', '$q', function (HousingResources, $scope, $q) {
+  .controller('FilterCtrl', ['HousingResources', '$scope', '$q', '$timeout', function (HousingResources, $scope, $q, $timeout) {
     var promises = {
       freeServices: HousingResources.freeServices(),
       contractTerms: HousingResources.contractTerms(),
@@ -43,6 +43,14 @@ angular.module('housingFilter', ['housingResources'])
     $scope.linkToCompare = linkToCompare;
     $scope.getHeaderImage = getHeaderImage;
 
+
+    $timeout(function () {
+      $scope.$watch('loadingComplete', function (newValue) {
+        if (newValue == true) {
+          loadJQuery(jQuery);
+        }
+      });
+    });
 
     $q.all(promises).then(function (results) {
       $scope.features['Free Services'] = results.freeServices.data.list;
@@ -115,13 +123,23 @@ angular.module('housingFilter', ['housingResources'])
     }
 
     function getHeaderImage(residence) {
-      var images = residence.images;
-
-      if (images) {
-        return images[0].url;
+      if (residence.images) {
+        return residence.images;
       } else {
         // placeholder thumbnail
         return 'https://placehold.it/240x180';
       }
     }
   }]);
+
+
+function loadJQuery($) {
+  $(function () {
+    console.log('jquery ready');
+    $('fieldset').on('show.bs.collapse', function () {
+      $(this).find('.glyphicon').removeClass('glyphicon-plus-sign').addClass('glyphicon-minus-sign');
+    }).on('hide.bs.collapse', function () {
+      $(this).find('.glyphicon').removeClass('glyphicon-minus-sign').addClass('glyphicon-plus-sign');
+    });
+  });
+}

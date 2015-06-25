@@ -5,12 +5,20 @@ angular.module('housingResources', [])
         return $http.get('/fa/housing/api/v1.0/housing_options', {
           cache: true,
           transformResponse: appendTransform($http.defaults.transformResponse, function (data) {
-            data.data = _.chain(data.data).map(function (value) {
-              if (!!value.summer_housing) {
-                value.rates = value.sch_rates;
-              }
-              return value;
-            }).filter('rates').value();
+            data.data =
+              _.chain(data.data)
+                .reject('id', 497)
+                .map(function (value) {
+                  if (!!value.summer_housing) {
+                    value.rates = value.sch_rates;
+                  }
+                  return value;
+                })
+                .filter('rates')
+                .sortBy(function (value) {
+                  return parseInt(value.weight);
+                })
+                .value();
 
             return data;
           })
@@ -18,7 +26,13 @@ angular.module('housingResources', [])
       },
 
       residenceTypes: function () {
-        return $http.get('/fa/housing/taxonomy_term.json?vocabulary=8', {cache: true});
+        return $http.get('/fa/housing/taxonomy_term.json?vocabulary=8', {
+          cache: true,
+          transformResponse: appendTransform($http.defaults.transformResponse, function (data) {
+            data.list = _.chain(data.list).reject('tid', '337').reject('tid', '72').value();
+            return data;
+          })
+        });
       },
 
       amenities: function () {

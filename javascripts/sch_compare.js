@@ -16,7 +16,8 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
         },
         views: {
           'header': {
-            template: '<div class="thumbnail hidden-print"><img ng-src="{{getHeaderImage($index)}}" alt=""></div>' +
+            template: '<div><a href="" ng-click="removeCompare($index)">remove from comparison</div>' +
+            '<div class="thumbnail hidden-print"><img ng-src="{{getHeaderImage($index)}}" alt=""></div>' +
             '<div class="lead"><a ng-href="{{comparees.residences[$index].url}}">{{comparees.residences[$index].label | correctName}}</a></div>' +
             '<div>{{comparees.rooms[$index].label}}</div>'
           },
@@ -27,7 +28,7 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
             template: '{{comparees.residences[$index].field_required_occupancy}}'
           },
           'feature': {
-            template: '<span ng-bind-html="comparees.residences[$index].amenities[feature.tid] | compact"></span>'
+            template: '<span ng-bind-html="comparees.residences[$index].amenities[feature.tid] || comparees.residences[$index].free_services[feature.tid] || comparees.residences[$index].communities[feature.tid] || comparees.residences[$index].safety[feature.tid] | compact"></span>'
           }
         }
       })
@@ -70,9 +71,9 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
   .filter('compact', ['$sce', function ($sce) {
     return function (text) {
       if (angular.isDefined(text)) {
-        return $sce.trustAsHtml('<span class="glyphicon glyphicon-ok" style="color:green;"></span>');
+        return $sce.trustAsHtml('<span class="glyphicon glyphicon-ok" style="color:#22cc55;"></span>');
       }
-      return $sce.trustAsHtml('<span class="glyphicon glyphicon-remove" style="color:#bbb;"></span>');
+      return $sce.trustAsHtml('<!--span class="glyphicon glyphicon-remove" style="color:#bbb;"></span-->');
     };
   }])
 
@@ -152,9 +153,15 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
 
     function resetComparees(index) {
       if (!$scope.comparees.residences[index]) {
-        for (var i = index >= 2 ? index : 2; i < $scope.comparees.residences.length; i++) {
-          resetSubSelect(i);
-          $scope.comparees.residences[i] = null;
+        for (var i = index; i < $scope.comparees.residences.length; i++) {
+          if (i < $scope.comparees.residences.length - 1) {
+            $scope.comparees.residences[i] = $scope.comparees.residences[i + 1];
+            $scope.comparees.apartments[i] = $scope.comparees.apartments[i + 1];
+            $scope.comparees.rooms[i] = $scope.comparees.rooms[i + 1];
+          } else {
+            resetSubSelect(i);
+            $scope.comparees.residences[i] = null;
+          }
         }
       }
     }
@@ -274,7 +281,7 @@ angular.module('housingCompare', ['ui.router', 'housingResources'])
     function getHeaderImage(index) {
       var images = $scope.comparees.residences[index].images;
       if (images) {
-        return images[_.random(images.length - 1)].url;
+        return images;
       } else {
         return 'https://placehold.it/240x180';
       }
